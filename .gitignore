@@ -10,3 +10,6 @@ compile_commands.json
 
 # Ignore any LSP caches 
 .cache/
+
+# Ignore the output executable
+mal

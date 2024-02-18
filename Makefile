@@ -6,8 +6,9 @@ OBJ_DIR=obj
 SRC_DIR=src
 TEST_DIR=test
 ASM_DIR=asm
-TEST_BIN_DIR=$(BIN_DIR)/test
-PROGRAM_DIR=programs
+TEST_BIN_DIR=$(BIN_DIR)
+
+PROGRAM_DIR=prog
 
 # Tool options
 CXX=g++
@@ -55,7 +56,7 @@ $(TESTS): $(TEST_OBJECTS) $(OBJECTS)
 
 
 # ==== PROGRAM TARGETS ==== #
-PROGRAMS = 
+PROGRAMS = mal
 PROGRAM_OBJECTS := $(PROGRAM_SOURCES:$(PROGRAM_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 $(PROGRAM_OBJECTS): $(OBJ_DIR)/%.o : $(PROGRAM_DIR)/%.cpp
@@ -82,8 +83,8 @@ clean:
 	rm -fv *.o $(OBJ_DIR)/*.o 
 	# Clean test programs
 	rm -fv $(TEST_BIN_DIR)/test_*
-	# Remove the program binary from the root dir
-	#rm -v lox
+	# Remove the output executable
+	rm -fv mal
 
 print-%:
 	@echo $* = $($*)
