@@ -50,9 +50,6 @@ TEST_CASE("test_tokenize_special_character", "token")
 		out_tokens.push_back(out);
 	} while(out.length() > 0);
 
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
-
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		REQUIRE(out_tokens[t] == exp_tokens[t]);
@@ -74,6 +71,10 @@ TEST_CASE("test_tokenize_alphanum", "token")
 		out = t.next();
 		out_tokens.push_back(out);
 	} while(out.length() > 0);
+
+
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)

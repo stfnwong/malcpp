@@ -16,21 +16,16 @@ bool Tokenizer::is_alphanum(char c) const
     return (std::isalnum(c) || c == '_' || c == '-') ? true : false;
 }
 
-bool Tokenizer::at_end(void)
+bool Tokenizer::at_end(void) const
 {
 	return (this->pos == this->source.length()-1) ? true : false;
 }
 
-char Tokenizer::peek_char(void)
+char Tokenizer::peek_char(void) const
 {
 	return this->source[this->pos];
 }
 
-//char Tokenizer::peek_next_char(void)
-//{
-//	return this->source[this->pos+1];
-//}
-//
 char Tokenizer::advance(void)
 {
 	if(this->at_end())
@@ -68,13 +63,13 @@ std::string Tokenizer::capture_alphanum(void)
 
 	while(!this->at_end())
 	{
-		char c = this->advance();
-		if(!this->is_alphanum(c))
+		if(!this->is_alphanum(this->peek_char()))
 			break;
+		this->advance();
 		len++;
 	}
 
-	return this->source.substr(this->pos-len-1, len);
+	return this->source.substr(this->pos-len, len);
 }
 
 std::string Tokenizer::capture_one_char(void)
