@@ -4,18 +4,12 @@
 #include "catch/catch.hpp"
 
 
+#include <iostream>
 #include <string>
 #include <vector>
 
 #include "Tokenizer.hpp"
 
-
-TEST_CASE("test_init_tokenizer", "token")
-{
-	Tokenizer t("a b c");
-
-	// cool story but whats the assert?
-}
 
 
 TEST_CASE("test_tokenize_single_chars", "token")
@@ -41,11 +35,95 @@ TEST_CASE("test_tokenize_single_chars", "token")
 
 TEST_CASE("test_tokenize_special_character", "token")
 {
-	std::string inp = "~@";
+	std::string out;
+	std::string inp = "~@       ~@";		// Can we get ~@ from a string?
+
 	Tokenizer t(inp);
 
-	std::string out = t.next();
+	out = t.next();
+	REQUIRE(out == "~@");
 
-	REQUIRE(out == inp);
+	out = t.next();
+	REQUIRE(out == "~@");
+
+	out = t.next();
+	REQUIRE(out == "");
 }
 
+TEST_CASE("test_tokenize_alphanum", "token")
+{
+	std::string inp = "a b c";
+
+	Tokenizer t(inp);
+
+	std::vector<std::string> exp_tokens = {"a", "b", "c"};
+	std::vector<std::string> out_tokens;
+	std::string out;
+
+	do
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	} while(out.length() > 0);
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+	
+}
+
+TEST_CASE("test_tokenize_comment", "token")
+{
+	std::string inp = "a ; none of this should appear in output";
+
+	Tokenizer t(inp);
+
+	// Note that we return an empty token by default
+	std::vector<std::string> exp_tokens = {"a", ""};	
+	std::vector<std::string> out_tokens;
+	std::string out;
+
+	do
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	} while(out.length() > 0);
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
+
+TEST_CASE("test_tokenize_string", "token")
+{
+	std::string inp = "a string \"of text\"";
+
+	Tokenizer t(inp);
+
+	std::vector<std::string> exp_tokens = {
+		"a", "string", "\"of text\""
+	};
+
+	std::vector<std::string> out_tokens;
+	std::string out = "<sentinel>";
+
+	while(1)
+	{
+		std::string out = t.next();
+		std::cout << "out: " << out << "(size: " << out.size() << ")" << std::endl;
+		out_tokens.push_back(out);
+		if(out.size() == 0)
+			break;
+	}
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+//
+//TEST_CASE("test_tokenize_escaped_string", "token")
+//{
+//}

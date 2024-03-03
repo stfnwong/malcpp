@@ -15,9 +15,14 @@ class Tokenizer
 	std::string source;
 	unsigned    pos;
 
+	bool is_alphanum(char c) const;
 	bool at_end(void);
 	char peek_char(void);
 	char advance(void);
+
+	std::string capture_string_literal(void);
+	std::string capture_alphanum(void);
+	std::string capture_one_char(void);
 
 	public:
 		Tokenizer(const std::string& s) : source(s), pos(0) {}
