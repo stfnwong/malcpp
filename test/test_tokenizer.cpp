@@ -109,24 +109,22 @@ TEST_CASE("test_tokenize_comment", "token")
 TEST_CASE("test_tokenize_string", "token")
 {
 	std::string inp = "a string \"of text\"";
-
 	Tokenizer t(inp);
 
 	std::vector<std::string> exp_tokens = {
-		"a", "string", "\"of text\""
+		"a", "string", "\"of text\"", "" 
 	};
-
 	std::vector<std::string> out_tokens;
-	std::string out = "<sentinel>";
+	std::string out;
 
-	while(1)
+	do
 	{
-		std::string out = t.next();
-		std::cout << "out: " << out << "(size: " << out.size() << ")" << std::endl;
+		out = t.next();
 		out_tokens.push_back(out);
-		if(out.size() == 0)
-			break;
-	}
+	} while(out.length() > 0); 		// TODO: do we test for null string?
+
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
