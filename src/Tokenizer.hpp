@@ -27,8 +27,6 @@ class Tokenizer
 	public:
 		Tokenizer(const std::string& s);
 		std::string next(void);
-		std::string peek(void);
-
 };
 
 

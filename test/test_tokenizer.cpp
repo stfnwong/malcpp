@@ -15,22 +15,23 @@
 TEST_CASE("test_tokenize_single_chars", "token")
 {
 	std::string inp = "[],(),{}";
-	std::vector<std::string> exp_outputs = {
-		"[", "]", "(", ")", "{", "}"
+	std::vector<std::string> exp_tokens = {
+		"[", "]", "(", ")", "{", "}", ""
 	};
-	std::vector<std::string> tok_outputs;
+	std::vector<std::string> out_tokens;
+	std::string out;
 
 	Tokenizer t(inp);
 
-	while(1)
+	do
 	{
-		std::string out = t.next();
-		if(out == "")
-			break;
-		tok_outputs.push_back(out);
-	}
+		out = t.next();
+		out_tokens.push_back(out);
+	} while(out.size() > 0);
 
-	REQUIRE(tok_outputs.size() == exp_outputs.size());
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
 }
 
 TEST_CASE("test_tokenize_special_character", "token")
@@ -71,10 +72,6 @@ TEST_CASE("test_tokenize_alphanum", "token")
 		out = t.next();
 		out_tokens.push_back(out);
 	} while(out.length() > 0);
-
-
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -123,6 +120,30 @@ TEST_CASE("test_tokenize_string", "token")
 		out_tokens.push_back(out);
 	} while(out.length() > 0); 		// TODO: do we test for null string?
 
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
+TEST_CASE("test_tokenize_escaped_string", "token")
+{
+	std::string inp = "a \"string\" with \"another \\\"string\\\" inside\"";
+
+	Tokenizer t(inp);
+
+	std::vector<std::string> exp_tokens = {
+		"a", "\"string\"", "with", "\"another \\\"string\\\" inside\"", ""
+	};
+	std::vector<std::string> out_tokens;
+	std::string out;
+
+	do
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	} while(out.length() > 0);
+
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
@@ -130,8 +151,3 @@ TEST_CASE("test_tokenize_string", "token")
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		REQUIRE(out_tokens[t] == exp_tokens[t]);
 }
-
-//
-//TEST_CASE("test_tokenize_escaped_string", "token")
-//{
-//}

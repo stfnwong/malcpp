@@ -2,6 +2,7 @@
  * TOKENIZE
  */
 
+#include <iostream>   		// TODO: debug only, remove
 
 #include "Tokenizer.hpp"
 
@@ -38,21 +39,30 @@ char Tokenizer::advance(void)
 std::string Tokenizer::capture_string_literal(void)
 {
 	unsigned len = 0;
-	char c;
+	char c = this->source[this->pos-1];
+
+	std::cout << "[" << __func__ << "] capturing string from pos " << this->pos << " (" << this->source[this->pos] << ")" << std::endl;
 
 	while(!this->at_end())
 	{
-		c = this->advance();
-		len++;
-
+		std::cout << c;
 		if(c == '\\' && this->peek_char() == '"')	// if its an escape char
 		{
 			c = this->advance();
+			len++;
 			continue;
 		}
+
+		c = this->advance();
+		len++;
+
 		if(c == '"')
 			break;
 	}
+
+	std::cout << std::endl << "Final string: " 
+		<< this->source.substr(this->pos-len-1, len+1)
+		<< std::endl;
 
 	return this->source.substr(this->pos-len-1, len+1);
 }
@@ -77,20 +87,10 @@ std::string Tokenizer::capture_one_char(void)
 	return std::string(1, this->advance());
 }
 
-std::string Tokenizer::peek(void)
-
-{
-	// Get the current token but don't advance
-	// Basically advance() but we don't consume
-	return "";		// Shut linter up for now
-}
-
 
 /*
-  * ```[\[\]{}()'`~^@]```: Captures any special single character, one of
-    ```[]{}()'`~^@``` (tokenized).
-*/
-
+ * Entry point for obtaining next token.
+ */
 std::string Tokenizer::next(void)
 {
 	if(this->at_end())
@@ -133,7 +133,7 @@ std::string Tokenizer::next(void)
 			case '\'':
 			case '`':
 			case '^':
-				return this->source.substr(this->pos-1, 2);
+				return this->source.substr(this->pos-1, 1);
 
 			// Capture ranges of double quotes
 			case '"':
