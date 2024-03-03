@@ -2,9 +2,9 @@
  * TOKENIZE
  */
 
-#include <iostream>   		// TODO: debug only, remove
 
 #include "Tokenizer.hpp"
+
 
 Tokenizer::Tokenizer(const std::string& s) : source(s), pos(0) 
 {
@@ -39,32 +39,26 @@ char Tokenizer::advance(void)
 std::string Tokenizer::capture_string_literal(void)
 {
 	unsigned len = 0;
-	char c = this->source[this->pos-1];
-
-	std::cout << "[" << __func__ << "] capturing string from pos " << this->pos << " (" << this->source[this->pos] << ")" << std::endl;
+	char c; 
 
 	while(!this->at_end())
 	{
-		std::cout << c;
-		if(c == '\\' && this->peek_char() == '"')	// if its an escape char
-		{
-			c = this->advance();
-			len++;
-			continue;
-		}
-
 		c = this->advance();
 		len++;
 
 		if(c == '"')
 			break;
+
+		// Skip ahead another character if we see an escaped quote
+		if(c == '\\' && this->peek_char() == '"') 
+		{
+			c = this->advance();
+			len++;
+		}
 	}
 
-	std::cout << std::endl << "Final string: " 
-		<< this->source.substr(this->pos-len-1, len+1)
-		<< std::endl;
-
 	return this->source.substr(this->pos-len-1, len+1);
+
 }
 
 std::string Tokenizer::capture_alphanum(void)
@@ -135,9 +129,7 @@ std::string Tokenizer::next(void)
 			case '^':
 				return this->source.substr(this->pos-1, 1);
 
-			// Capture ranges of double quotes
-			case '"':
-				// Now return the string that captures the start and end quotes;
+			case '"':   // capture string literal including quotes
 				return this->capture_string_literal();
 			case ';': 	//comment token
 				while(!this->at_end() && c != '\n')

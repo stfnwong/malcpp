@@ -144,9 +144,6 @@ TEST_CASE("test_tokenize_escaped_string", "token")
 		out_tokens.push_back(out);
 	} while(out.length() > 0);
 
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
-
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		REQUIRE(out_tokens[t] == exp_tokens[t]);
