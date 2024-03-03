@@ -17,11 +17,6 @@ bool Tokenizer::is_alphanum(char c) const
     return (std::isalnum(c) || c == '_' || c == '-') ? true : false;
 }
 
-bool Tokenizer::at_end(void) const
-{
-	return (this->pos == this->source.length()-1) ? true : false;
-}
-
 char Tokenizer::peek_char(void) const
 {
 	return this->source[this->pos];
@@ -141,5 +136,10 @@ std::string Tokenizer::next(void)
 		}
 	}
 
-	return "";			// unreachable
+	return "\0";			
+}
+
+bool Tokenizer::at_end(void) const
+{
+	return (this->pos == this->source.length()-1) ? true : false;
 }
