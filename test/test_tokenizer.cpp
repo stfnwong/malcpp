@@ -36,19 +36,28 @@ TEST_CASE("test_tokenize_single_chars", "token")
 TEST_CASE("test_tokenize_special_character", "token")
 {
 	std::string out;
-	std::string inp = "~@       ~@";		// Can we get ~@ from a string?
+	std::string inp = "~@ ~@       ~@";		// Can we get ~@ from a string?
 
 	Tokenizer t(inp);
 
-	out = t.next();
-	REQUIRE(out == "~@");
+	// Note empty token at the end, this is a consequence of the do-while loop
+	std::vector<std::string> exp_tokens = {"~@", "~@", "~@", ""};
+	std::vector<std::string> out_tokens;
 
-	out = t.next();
-	REQUIRE(out == "~@");
+	do
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	} while(out.length() > 0);
 
-	out = t.next();
-	REQUIRE(out == "");
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
 }
+
 
 TEST_CASE("test_tokenize_alphanum", "token")
 {
@@ -56,7 +65,7 @@ TEST_CASE("test_tokenize_alphanum", "token")
 
 	Tokenizer t(inp);
 
-	std::vector<std::string> exp_tokens = {"a", "b", "c"};
+	std::vector<std::string> exp_tokens = {"a", "b", "c", ""};
 	std::vector<std::string> out_tokens;
 	std::string out;
 

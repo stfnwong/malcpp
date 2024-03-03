@@ -5,12 +5,16 @@
 
 #include "Tokenizer.hpp"
 
+Tokenizer::Tokenizer(const std::string& s) : source(s), pos(0) 
+{
+	this->source.push_back('\0');
+}
 
 bool Tokenizer::is_alphanum(char c) const
 {
-    return (std::isalnum(c) || c == '_') ? true : false;
+	// TODO: I think '-' is a legit character for an identifier
+    return (std::isalnum(c) || c == '_' || c == '-') ? true : false;
 }
-
 
 bool Tokenizer::at_end(void)
 {
@@ -22,6 +26,11 @@ char Tokenizer::peek_char(void)
 	return this->source[this->pos];
 }
 
+//char Tokenizer::peek_next_char(void)
+//{
+//	return this->source[this->pos+1];
+//}
+//
 char Tokenizer::advance(void)
 {
 	if(this->at_end())
@@ -90,7 +99,7 @@ std::string Tokenizer::peek(void)
 std::string Tokenizer::next(void)
 {
 	if(this->at_end())
-		return "";
+		return "\0";  // make the end a null char
 
 	char c;
 
@@ -98,7 +107,7 @@ std::string Tokenizer::next(void)
 	{
 		c = this->advance();
 		if(c == '\0')
-			break;
+			return "\0";
 
 		if(this->is_alphanum(c))
 			return this->capture_alphanum();
@@ -115,8 +124,8 @@ std::string Tokenizer::next(void)
 			case '~': {
 				if(this->peek_char() == '@')
 				{
-					this->advance();
-					return this->source.substr(this->pos-1, 2); //~@
+					this->advance(); // move over that char
+					return this->source.substr(this->pos-2, 2); //~@
 				}
 				return this->source.substr(this->pos-1, 1); // ~
 			}
@@ -131,7 +140,7 @@ std::string Tokenizer::next(void)
 			case '^':
 				return this->source.substr(this->pos-1, 2);
 
-			// Capture ranges of double quotes 
+			// Capture ranges of double quotes
 			case '"':
 				// Now return the string that captures the start and end quotes;
 				return this->capture_string_literal();

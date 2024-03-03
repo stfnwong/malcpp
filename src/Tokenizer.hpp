@@ -18,6 +18,7 @@ class Tokenizer
 	bool is_alphanum(char c) const;
 	bool at_end(void);
 	char peek_char(void);
+	//char peek_next_char(void);
 	char advance(void);
 
 	std::string capture_string_literal(void);
@@ -25,7 +26,7 @@ class Tokenizer
 	std::string capture_one_char(void);
 
 	public:
-		Tokenizer(const std::string& s) : source(s), pos(0) {}
+		Tokenizer(const std::string& s);
 		std::string next(void);
 		std::string peek(void);
 
