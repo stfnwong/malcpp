@@ -4,7 +4,6 @@
 #include "catch/catch.hpp"
 
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -24,4 +23,30 @@ TEST_CASE("test_tokenize", "reader")
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
+//TEST_CASE("test_init_reader", "reader")
+//{
+//	std::string source = "(+ a b);";
+//	std::vector<std::string> exp_tokens = {
+//	};
+//}
+//
+
+
+TEST_CASE("test_read_list", "reader")
+{
+	std::string source = "";
+	std::vector<std::string> tokens = tokenize(source);
+
+	Reader reader(tokens);
+
+
+	while(!t.at_end())
+		tokens.push_back(t.next());
+
+	Reader r(tokens);
+
+	read_form(r);
 }

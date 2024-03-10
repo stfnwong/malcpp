@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "Value.hpp"
+
 
 class Reader
 {
@@ -21,7 +23,13 @@ class Reader
 		bool at_end(void) const;
 		std::string next(void);
 		std::string peek(void) const;
+		unsigned get_pos(void) const;
 };
+
+
+Value read_list(Reader& reader);
+Value read_atom(Reader& reader);
+Value read_form(Reader& reader);
 
 
 std::vector<std::string> tokenize(const std::string& source);

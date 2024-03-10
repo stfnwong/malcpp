@@ -13,3 +13,6 @@ compile_commands.json
 
 # Ignore the output executable
 mal
+
+# Don't commit the guide 
+guide.md
