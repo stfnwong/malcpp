@@ -37,16 +37,4 @@ TEST_CASE("test_tokenize", "reader")
 
 TEST_CASE("test_read_list", "reader")
 {
-	std::string source = "";
-	std::vector<std::string> tokens = tokenize(source);
-
-	Reader reader(tokens);
-
-
-	while(!t.at_end())
-		tokens.push_back(t.next());
-
-	Reader r(tokens);
-
-	read_form(r);
 }

@@ -42,27 +42,29 @@ unsigned Reader::get_pos(void) const
  */
 Value read_list(Reader& reader)
 {
-	std::string token;
-	ListValue v;
+	Value token;
+	std::vector<Value> lvec;
+	Value list(lvec);
 
 	do
 	{
 		token = read_form(reader);
-		if(token == ")")
-			return v;
+		if(token.as_str() == ")")
+			return list;
+
 		if(reader.at_end())
 			std::cerr << "This is an error that I am not handling" << std::endl;
-		v.add(SymbolValue(token));
+		list.push(Value(token));
 	} while(!reader.at_end());
 
-	return v;
+	return list;
 }
 
 
 Value read_atom(Reader& reader)
 {
 	if(std::isalpha(reader.peek()[0]))
-		return NumberValue(reader.peek());
+		return Value(reader.peek());
 }
 
 

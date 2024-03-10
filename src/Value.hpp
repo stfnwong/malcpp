@@ -9,56 +9,64 @@
 #include <string>
 #include <vector>
 
+enum class ValueType
+{
+	UNIT,
+	ATOM,
+	BOOL,
+	INT,
+	FLOAT,
+	STRING,
+	LIST
+};
+
 
 // TODO: Is this just for Substitution?
 class Value
 {
-	enum class ValueType
-	{
-		ATOM,
-		FLOAT,
-		STRING,
-		LIST
-	};
 
 	union {
 		int i;
 		double f;
+		bool b;
 		// TODO: function pointer...
 	} value_data;
 
+	ValueType type;
 	std::string str;
 	std::vector<Value> list;
-};
 
 
-class ListValue : public Value
-{
-	std::vector<Value> list;
+	Value cast_to_int(void) const;
+	Value cast_to_float(void) const;
 
 	public:
-		ListValue() {}  // TODO: how do we construct this?
-		void add(Value v);
+		Value();
+		Value(int i);
+		Value(double f);
+		//Value(bool b);
+		Value(const std::string& s);
+		Value(const std::vector<Value>& l);
+
+		// TODO: bool is_number()?
+
+		int as_int(void) const;
+		bool as_bool(void) const;
+		double as_float(void) const;
+		std::string as_str(void) const;
+		// as_list()?
+
+		// Interface for list types
+		void push(Value v);
+		Value pop(void);
+
+		// Operators 
+		bool operator==(const Value& other) const;
+		bool operator!=(const Value& other) const;
+
+		ValueType get_type(void) const;
 };
 
-
-class SymbolValue : public Value
-{
-	std::string symbol;
-
-	public:
-		SymbolValue(const std::string& s) : symbol(s) {} 
-};
-
-
-class NumberValue : public Value
-{
-	float value;
-
-	public:
-		NumberValue(float v) : value(v) {} 
-		NumberValue(const std::string& s) : value(std::stof(s)) {} 
-};
 
 
 

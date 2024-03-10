@@ -9,14 +9,14 @@
 
 
 
-TEST_CASE("test_create_symbol_value", "value")
-{
-}
-
 
 TEST_CASE("test_create_number_value", "value")
 {
-	NumberValue n1(1.0);
+	Value v1(1.0f);
 
-	NumberValue n2("1.0");
+	// TODO: if ValueType becomes private then test against a string repr?
+	REQUIRE(v1.get_type() == ValueType::FLOAT);
+
+	Value v2(2);
+	REQUIRE(v2.get_type() == ValueType::INT);
 }
