@@ -40,9 +40,10 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 	std::string inp = "hello world abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 (;:() []{}\"'* ;:() []{}\"'* ;:() []{}\"'*)";
 	std::vector<std::string> exp_tokens = {
 		"hello", "world", "abcdefghijklmnopqrstuvwxyz",
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789",
-		"(;:() []{}\"'*", ";:() []{}\"'*", ";:()",
-		"[]{}\"'*)"
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789", 
+		"(", "\0" //NOTE: the ';' makes the rest of the string a comment
+		//"(;:() []{}\"'*", ";:() []{}\"'*", ";:()",
+		//"[]{}\"'*)"
 	};
 
 	std::vector<std::string> out_tokens;
@@ -55,9 +56,6 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 		out = t.next();
 		out_tokens.push_back(out);
 	}
-
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[Token " << t << "]: " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)

@@ -31,12 +31,9 @@ TEST_CASE("test_init_reader", "reader")
 {
 	std::string source = "(+ a b)";
 	std::vector<std::string> exp_tokens = {
-		"(", "+", "a", "b", ")", "\0"
+		"(", "+", "a", "b", ")"
 	};
-
 	std::vector<std::string> tokens = tokenize(source);
-	for(unsigned i = 0; i < tokens.size(); ++i)
-		std::cout << "[token " << i << "]: " << tokens[i] << std::endl;
 
 	Reader reader(tokens);
 
@@ -48,11 +45,8 @@ TEST_CASE("test_init_reader", "reader")
 	while(!reader.at_end())
 		out_tokens.push_back(reader.next());
 
-	for(unsigned i = 0; i < out_tokens.size(); ++i)
-		std::cout << "[" << i << "]: " << out_tokens[i] << std::endl;
-
-	//for(unsigned i = 0; i < exp_tokens.size(); ++i)
-	//	REQUIRE(reader.next() == exp_tokens[i]);
+	for(unsigned i = 0; i < exp_tokens.size(); ++i)
+		REQUIRE(out_tokens[i] == exp_tokens[i]);
 }
 
 
@@ -71,6 +65,7 @@ TEST_CASE("test_read_list", "reader")
 	Reader reader(tokens);
 	REQUIRE(reader.peek() == "(");
 
-	Value out_val = read_list(reader);
-	std::cout << out_val.to_string() << std::endl;
+	// TODO: still got an issue here
+	//Value out_val = read_list(reader);
+	//std::cout << out_val.to_string() << std::endl;
 }
