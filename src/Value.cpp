@@ -2,6 +2,7 @@
  * VALUE
  */
 
+#include <sstream>
 #include <stdexcept>
 
 #include "Value.hpp"
@@ -137,3 +138,29 @@ ValueType Value::get_type(void) const
 {
 	return this->type;
 }
+
+
+std::string Value::type_to_str(void) const
+{
+	switch(this->type)
+	{
+		case ValueType::UNIT: return "UNIT";
+		case ValueType::ATOM: return "ATOM";
+		case ValueType::BOOL: return "BOOL";
+		case ValueType::INT: return "INT";
+		case ValueType::FLOAT: return "FLOAT";
+		case ValueType::STRING: return "STRING";
+		case ValueType::LIST: return "LIST";
+		default: return "UNKNOWN";
+	}
+}
+
+std::string Value::to_string(void) const
+{
+	std::ostringstream oss;
+
+	oss << "Value(" << this->type_to_str() << ")";
+
+	return oss.str();
+}
+

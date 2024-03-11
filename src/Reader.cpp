@@ -14,7 +14,7 @@ Reader::Reader(const std::vector<std::string>& t) : pos(0), tokens(t) {}
 
 bool Reader::at_end(void) const
 {
-	return (this->pos == this->tokens.size()) ? true : false;
+	return (this->pos == this->tokens.size()-1) ? true : false;
 }
 
 std::string Reader::next(void)
@@ -73,9 +73,9 @@ Value read_form(Reader& reader)
 	char c = reader.peek()[0];
 
 	if(c == '(')
-		read_list(reader);
+		return read_list(reader);
 	else
-		read_atom(reader);
+		return read_atom(reader);
 }
 
 
@@ -88,6 +88,7 @@ std::vector<std::string> tokenize(const std::string& source)
 
 	while(!t.at_end())
 		tokens.push_back(t.next());
+	tokens.push_back("\0");
 
 	return tokens;
 }

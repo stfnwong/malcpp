@@ -12,6 +12,7 @@
 #include "Value.hpp"
 
 
+// Wraps a list of tokens
 class Reader
 {
 	unsigned pos;

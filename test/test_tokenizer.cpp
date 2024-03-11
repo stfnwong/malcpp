@@ -35,6 +35,36 @@ TEST_CASE("test_tokenize_single_chars", "token")
 }
 
 
+TEST_CASE("test_tokenize_string_with_spaces", "token")
+{
+	std::string inp = "hello world abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 (;:() []{}\"'* ;:() []{}\"'* ;:() []{}\"'*)";
+	std::vector<std::string> exp_tokens = {
+		"hello", "world", "abcdefghijklmnopqrstuvwxyz",
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789",
+		"(;:() []{}\"'*", ";:() []{}\"'*", ";:()",
+		"[]{}\"'*)"
+	};
+
+	std::vector<std::string> out_tokens;
+	std::string out;
+
+	Tokenizer t(inp);
+
+	while(!t.at_end())
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	}
+
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[Token " << t << "]: " << out_tokens[t] << std::endl;
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
 TEST_CASE("test_tokenize_special_character", "token")
 {
 	std::string out;
@@ -86,13 +116,14 @@ TEST_CASE("test_tokenize_comment", "token")
 {
 	std::string inp = "a ; none of this should appear in output";
 
-	Tokenizer t(inp);
 
 	// Comment just eats till the end of the input and then fails over
 	// to returning a null string.
 	std::vector<std::string> exp_tokens = {"a", ""};
 	std::vector<std::string> out_tokens;
 	std::string out;
+
+	Tokenizer t(inp);
 
 	while(!t.at_end())
 	{
@@ -134,13 +165,38 @@ TEST_CASE("test_tokenize_escaped_string", "token")
 {
 	std::string inp = "a \"string\" with \"another \\\"string\\\" inside\"";
 
-	Tokenizer t(inp);
 
 	std::vector<std::string> exp_tokens = {
 		"a", "\"string\"", "with", "\"another \\\"string\\\" inside\""
 	};
 	std::vector<std::string> out_tokens;
 	std::string out;
+
+	Tokenizer t(inp);
+
+	while(!t.at_end())
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	}
+
+	REQUIRE(out_tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
+TEST_CASE("test_tokenize_list", "token")
+{
+	std::string inp = "(a b c)";
+	std::vector<std::string> exp_tokens = {
+		"(", "a", "b", "c", ")"
+	};
+
+	std::string out;
+	std::vector<std::string> out_tokens;
+
+	Tokenizer t(inp);
 
 	while(!t.at_end())
 	{

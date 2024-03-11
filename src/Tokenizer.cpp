@@ -73,7 +73,7 @@ std::string Tokenizer::capture_alphanum(void)
 
 std::string Tokenizer::capture_one_char(void)
 {
-	return std::string(1, this->advance());
+	return std::string(1, this->source[this->pos-1]);
 }
 
 

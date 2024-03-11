@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+
 enum class ValueType
 {
 	UNIT,
@@ -65,6 +66,9 @@ class Value
 		bool operator!=(const Value& other) const;
 
 		ValueType get_type(void) const;
+
+		std::string type_to_str(void) const;
+		std::string to_string(void) const;
 };
 
 
