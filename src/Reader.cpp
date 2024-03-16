@@ -46,16 +46,25 @@ Value read_list(Reader& reader)
 	std::vector<Value> lvec;
 	Value list(lvec);
 
+	reader.next();		// consume '('
+
 	do
 	{
-		token = read_form(reader);
-		if(token.as_str() == ")")
-			return list;
-
-		if(reader.at_end())
-			std::cerr << "This is an error that I am not handling" << std::endl;
-		list.push(Value(token));
+		token = reader.peek();
+		if(token.get_type() == ValueType::ATOM &&
+		   token.as_str() == ")")
+		{
+			reader.next();
+			break;
+		}
+		list.push(read_form(reader));
 	} while(!reader.at_end());
+
+	//if(reader.at_end())
+	//{
+	//	std::cerr << "This is an error that I am not handling" << std::endl;  // TODO: throw here?
+	//	return list;
+	//}
 
 	return list;
 }
@@ -63,9 +72,12 @@ Value read_list(Reader& reader)
 
 Value read_atom(Reader& reader)
 {
-	if(std::isalpha(reader.peek()[0]))
-		return Value(reader.peek());
+	if(std::isdigit(reader.peek()[0]))
+		return Value(std::stof(reader.next()));	// probably shit
+
+	return Value(reader.next());
 }
+
 
 
 Value read_form(Reader& reader)

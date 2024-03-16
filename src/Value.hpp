@@ -33,10 +33,9 @@ class Value
 		// TODO: function pointer...
 	} value_data;
 
-	ValueType type;
-	std::string str;
+	ValueType          type;
+	std::string        str;
 	std::vector<Value> list;
-
 
 	Value cast_to_int(void) const;
 	Value cast_to_float(void) const;
@@ -51,21 +50,22 @@ class Value
 
 		// TODO: bool is_number()?
 
-		int as_int(void) const;
-		bool as_bool(void) const;
-		double as_float(void) const;
+		int         as_int(void) const;
+		bool        as_bool(void) const;
+		double      as_float(void) const;
 		std::string as_str(void) const;
 		// as_list()?
 
 		// Interface for list types
-		void push(Value v);
+		void  push(Value v);
 		Value pop(void);
 
 		// Operators 
 		bool operator==(const Value& other) const;
 		bool operator!=(const Value& other) const;
 
-		ValueType get_type(void) const;
+		ValueType   get_type(void) const;
+		unsigned    len(void) const;
 
 		std::string type_to_str(void) const;
 		std::string to_string(void) const;

@@ -21,10 +21,10 @@ class Reader
 	public:
 		Reader(const std::vector<std::string>& t);
 
-		bool at_end(void) const;
+		bool        at_end(void) const;
 		std::string next(void);
 		std::string peek(void) const;
-		unsigned get_pos(void) const;
+		unsigned    get_pos(void) const;
 };
 
 

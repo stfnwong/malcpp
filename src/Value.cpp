@@ -139,6 +139,19 @@ ValueType Value::get_type(void) const
 	return this->type;
 }
 
+unsigned Value::len(void) const
+{
+	switch(this->type)
+	{
+		case ValueType::LIST:
+			return this->list.size();
+		case ValueType::STRING:
+			return this->str.size();
+		default:
+			return 1;
+	}
+}
+
 
 std::string Value::type_to_str(void) const
 {
