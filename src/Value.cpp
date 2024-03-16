@@ -2,6 +2,7 @@
  * VALUE
  */
 
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
@@ -187,7 +188,7 @@ std::string Value::to_string(void) const
 			this->type == ValueType::ATOM)
 		oss << this->str;
 	else if(this->type == ValueType::FLOAT)
-		oss << std::to_string(this->value_data.f);
+		oss << std::dec << std::setprecision(4) << std::to_string(this->value_data.f);
 	else if(this->type == ValueType::INT)
 		oss << std::to_string(this->value_data.i);
 	else if(this->type == ValueType::BOOL)
