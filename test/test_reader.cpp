@@ -96,4 +96,23 @@ TEST_CASE("test_read_nested_list", "reader")
 
 	REQUIRE(out_val.get_type() == ValueType::LIST);
 	REQUIRE(out_val.len() == 3);
+
+	// We pop from the back, so check in reverse order
+	std::vector<ValueType> exp_value_types = {
+		ValueType::LIST,
+		ValueType::LIST,
+		ValueType::ATOM,
+	};
+
+	unsigned ii = 0;
+	while(out_val.len() > 0)
+	{
+		REQUIRE(out_val.pop().get_type() == exp_value_types[ii]);
+		ii++;
+	}
+
+	// Am testing we get the same output from read_str() here
+	Value out_val_read_str = read_str(source);
+	REQUIRE(out_val_read_str.get_type() == ValueType::LIST);
+	REQUIRE(out_val_read_str.len() == 3);
 }

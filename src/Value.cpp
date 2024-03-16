@@ -172,7 +172,28 @@ std::string Value::to_string(void) const
 {
 	std::ostringstream oss;
 
-	oss << "Value(" << this->type_to_str() << ")";
+	if(this->type == ValueType::LIST)
+	{
+		oss << "(";
+		for(unsigned i = 0; i < this->list.size(); ++i)
+		{
+			oss << this->list[i].to_string();
+			if(i < this->list.size()-1)
+				oss << ", ";
+		}
+		oss << ")";
+	}
+	else if(this->type == ValueType::STRING || 
+			this->type == ValueType::ATOM)
+		oss << this->str;
+	else if(this->type == ValueType::FLOAT)
+		oss << std::to_string(this->value_data.f);
+	else if(this->type == ValueType::INT)
+		oss << std::to_string(this->value_data.i);
+	else if(this->type == ValueType::BOOL)
+		oss << std::to_string(this->value_data.b);
+	else
+		oss << "Value";
 
 	return oss.str();
 }

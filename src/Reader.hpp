@@ -36,4 +36,7 @@ Value read_form(Reader& reader);
 std::vector<std::string> tokenize(const std::string& source);
 
 
+Value read_str(const std::string& input);
+
+
 #endif /*__MAL_READER_HPP*/

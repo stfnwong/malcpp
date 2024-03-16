@@ -7,20 +7,23 @@
 #include <iostream>
 #include <string>
 
+#include "Reader.hpp"
+#include "Printer.hpp"
 
-std::string READ(const std::string& input)
+
+Value READ(const std::string& input)
+{
+	return read_str(input);
+}
+
+Value EVAL(const Value& input)
 {
 	return input;
 }
 
-std::string EVAL(const std::string& input)
+std::string PRINT(Value& v)
 {
-	return input;
-}
-
-std::string PRINT(const std::string& input)
-{
-	return input;
+	return pr_str(v);
 }
 
 
@@ -34,7 +37,10 @@ int main(int argc, char *argv[])
 		std::cout << "> ";
 		if(std::getline(std::cin, input))
 		{
-			std::cout << input << std::endl;
+			auto ast = READ(input);
+			auto result = EVAL(ast);
+			
+			std::cout << PRINT(result) << std::endl;
 		}
 		else
 		{

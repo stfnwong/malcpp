@@ -14,7 +14,7 @@ Reader::Reader(const std::vector<std::string>& t) : pos(0), tokens(t) {}
 
 bool Reader::at_end(void) const
 {
-	return (this->pos == this->tokens.size()-1) ? true : false;
+	return (this->pos == this->tokens.size()) ? true : false;
 }
 
 std::string Reader::next(void)
@@ -60,22 +60,18 @@ Value read_list(Reader& reader)
 		list.push(read_form(reader));
 	} while(!reader.at_end());
 
-	//if(reader.at_end())
-	//{
-	//	std::cerr << "This is an error that I am not handling" << std::endl;  // TODO: throw here?
-	//	return list;
-	//}
-
 	return list;
 }
 
 
 Value read_atom(Reader& reader)
 {
-	if(std::isdigit(reader.peek()[0]))
-		return Value(std::stof(reader.next()));	// probably shit
+	std::string t = reader.next();
 
-	return Value(reader.next());
+	if(std::isdigit(t[0]))
+		return Value(std::stod(t));
+
+	return Value(t);
 }
 
 
@@ -106,9 +102,9 @@ std::vector<std::string> tokenize(const std::string& source)
 }
 
 
-void read_str(const std::string& source)
+Value read_str(const std::string& input)
 {
-	Tokenizer t(source);
+	Tokenizer t(input);
 
 	std::vector<std::string> tokens;
 
@@ -117,5 +113,5 @@ void read_str(const std::string& source)
 
 	Reader r(tokens);
 
-	read_form(r);
+	return read_form(r);
 }
