@@ -25,7 +25,6 @@ enum class ValueType
 // TODO: Is this just for Substitution?
 class Value
 {
-
 	union {
 		int i;
 		double f;

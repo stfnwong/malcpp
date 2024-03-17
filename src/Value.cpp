@@ -187,8 +187,9 @@ std::string Value::to_string(void) const
 	else if(this->type == ValueType::STRING || 
 			this->type == ValueType::ATOM)
 		oss << this->str;
+	// This is dumb - how is std::setprecision supposed to work?
 	else if(this->type == ValueType::FLOAT)
-		oss << std::dec << std::setprecision(4) << std::to_string(this->value_data.f);
+		oss << std::dec << std::setw(3) << std::setprecision(4) << std::to_string(this->value_data.f);
 	else if(this->type == ValueType::INT)
 		oss << std::to_string(this->value_data.i);
 	else if(this->type == ValueType::BOOL)
