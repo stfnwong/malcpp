@@ -7,6 +7,5 @@ This one will be in C++.
 
 - Step 0: REPL
 
-
-
-
+    REPL just makes an AST that only has symbols, numbers, and lists and prints 
+    these back on the console.

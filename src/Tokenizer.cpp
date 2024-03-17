@@ -3,12 +3,13 @@
  */
 
 
+#include "Error.hpp"
 #include "Tokenizer.hpp"
 
 
-Tokenizer::Tokenizer(const std::string& s) : source(s), pos(0) 
+Tokenizer::Tokenizer(const std::string& s) : source(s), pos(0), line(1), col(1)
 {
-	this->source.push_back('\0');
+	this->source.push_back('\0');		// add null termination to input
 }
 
 bool Tokenizer::is_alphanum(char c) const
@@ -28,6 +29,13 @@ char Tokenizer::advance(void)
 		return '\0';
 
 	this->pos++;
+	if(this->source[pos-1] == '\n')
+	{
+		this->line++;
+		this->col = 0;
+	}
+	this->col++;
+
 	return this->source[pos-1];
 }
 
@@ -83,7 +91,14 @@ std::string Tokenizer::capture_one_char(void)
 std::string Tokenizer::next(void)
 {
 	if(this->at_end())
+	{
+		if(!this->paren_check.empty())
+		{
+			std::string err_msg = "Unmatched '" + std::string(this->paren_check.top().glyph, 1) + "'"; 
+			Error(err_msg, this->paren_check.top().line, this->paren_check.top().col);
+		}
 		return "\0";  // make the end a null char
+	}
 
 	char c;
 
@@ -113,12 +128,21 @@ std::string Tokenizer::next(void)
 				}
 				return this->source.substr(this->pos-1, 1); // ~
 			}
+			// Opening single char
 			case '[':
-			case ']':
 			case '{':
-			case '}':
 			case '(':
+				this->paren_check.push(Paren(c, this->line, this->col));
+				return this->source.substr(this->pos-1, 1);
+
+			// Closing single char
+			case ']':
+			case '}':
 			case ')':
+				this->paren_check.pop();
+				return this->source.substr(this->pos-1, 1);
+
+			// Regular single char
 			case '\'':
 			case '`':
 			case '^':

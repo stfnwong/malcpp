@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include "Tokenizer.hpp"
@@ -205,4 +206,34 @@ TEST_CASE("test_tokenize_list", "token")
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
 		REQUIRE(out_tokens[t] == exp_tokens[t]);
+}
+
+
+// Error handling test 
+TEST_CASE("test_unmatched_paren_error", "token")
+{
+    // Redirect cout
+    std::ostringstream oss;
+    std::streambuf* p_cout_streambuf = std::cout.rdbuf();
+    std::cout.rdbuf(oss.rdbuf());
+
+	std::string input =  "(a b (c d)";
+	std::vector<std::string> out_tokens;
+	std::string out;
+
+	Tokenizer t(input);
+
+	while(out != "\0")
+	{
+		out = t.next();
+		out_tokens.push_back(out);
+	}
+
+	std::string output = oss.str();
+	//std::cout << oss.str() << std::endl;
+
+	// Reset cout
+    std::cout.rdbuf(p_cout_streambuf);
+
+	std::cout << output << std::endl;
 }
