@@ -9,23 +9,27 @@
 
 
 
-Tokenizer::Tokenizer(const std::string& s) : source(s), pos(0), line(1), col(1)
+/*
+ * READER
+ */
+Reader::Reader(const std::string& s) : 
+	source(s), cur_token(""), pos(0), line(1), col(1)
 {
-	this->source.push_back('\0');		// add null termination to input
 }
 
-bool Tokenizer::is_alphanum(char c) const
+
+bool Reader::is_alphanum(char c) const
 {
 	// TODO: I think '-' is a legit character for an identifier
     return (std::isalnum(c) || c == '_' || c == '-') ? true : false;
 }
 
-char Tokenizer::peek_char(void) const
+char Reader::peek_char(void) const
 {
 	return this->source[this->pos];
 }
 
-char Tokenizer::advance(void)
+char Reader::advance(void)
 {
 	if(this->at_end())
 		return '\0';
@@ -41,7 +45,7 @@ char Tokenizer::advance(void)
 	return this->source[pos-1];
 }
 
-std::string Tokenizer::capture_string_literal(void)
+std::string Reader::capture_string_literal(void)
 {
 	unsigned len = 0;
 	char c; 
@@ -66,7 +70,7 @@ std::string Tokenizer::capture_string_literal(void)
 
 }
 
-std::string Tokenizer::capture_alphanum(void)
+std::string Reader::capture_alphanum(void)
 {
 	unsigned len = 1;  // we already captured the first char
 
@@ -81,23 +85,27 @@ std::string Tokenizer::capture_alphanum(void)
 	return this->source.substr(this->pos-len, len);
 }
 
-std::string Tokenizer::capture_one_char(void)
+std::string Reader::capture_one_char(void)
 {
 	return std::string(1, this->source[this->pos-1]);
 }
 
+std::string Reader::peek(void) const
+{
+	return this->cur_token;
+}
 
-/*
- * Entry point for obtaining next token.
- */
-std::string Tokenizer::next(void)
+
+// TODO: have this set this->cur_token, new function signature is
+// void Reader::next(void)
+std::string Reader::next(void)
 {
 	if(this->at_end())
 	{
-		if(!this->paren_check.empty())
+		if(!this->paren_stack.empty())
 		{
-			std::string err_msg = "Unmatched '" + std::string(this->paren_check.top().glyph, 1) + "'"; 
-			Error(err_msg, this->paren_check.top().line, this->paren_check.top().col);
+			std::string err_msg = "Unmatched '" + std::string(this->paren_stack.top().glyph, 1) + "'"; 
+			Error(err_msg, this->paren_stack.top().line, this->paren_stack.top().col);
 		}
 		return "\0";  // make the end a null char
 	}
@@ -134,14 +142,14 @@ std::string Tokenizer::next(void)
 			case '[':
 			case '{':
 			case '(':
-				this->paren_check.push(Paren(c, this->line, this->col));
+				this->paren_stack.push(Paren(c, this->line, this->col));
 				return this->source.substr(this->pos-1, 1);
 
 			// Closing single char
 			case ']':
 			case '}':
 			case ')':
-				this->paren_check.pop();
+				this->paren_stack.pop();
 				return this->source.substr(this->pos-1, 1);
 
 			// Regular single char
@@ -165,30 +173,9 @@ std::string Tokenizer::next(void)
 	return "\0";			
 }
 
-bool Tokenizer::at_end(void) const
-{
-	return (this->pos == this->source.length()-1) ? true : false;
-}
-
-Reader::Reader(const std::vector<std::string>& t) : pos(0), tokens(t) {}
-
-
 bool Reader::at_end(void) const
 {
-	return (this->pos == this->tokens.size()) ? true : false;
-}
-
-std::string Reader::next(void)
-{
-	if(!this->at_end())
-		this->pos++;
-
-	return this->tokens[this->pos-1];
-}
-
-std::string Reader::peek(void) const
-{
-	return this->tokens[this->pos];
+	return (this->pos == this->source.length()-1) ? true : false;
 }
 
 unsigned Reader::get_pos(void) const
@@ -253,7 +240,7 @@ std::vector<std::string> tokenize(const std::string& source)
 {
 	std::vector<std::string> tokens;
 
-	Tokenizer t(source);
+	Reader t(source);
 
 	while(!t.at_end())
 		tokens.push_back(t.next());
@@ -265,14 +252,13 @@ std::vector<std::string> tokenize(const std::string& source)
 
 Value read_str(const std::string& input)
 {
-	Tokenizer t(input);
+	Reader r(input);
 
 	std::vector<std::string> tokens;
 
-	while(!t.at_end())
-		tokens.push_back(t.next());
+	while(!r.at_end())
+		tokens.push_back(r.next());
 
-	Reader r(tokens);
 
 	return read_form(r);
 }

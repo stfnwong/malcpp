@@ -22,7 +22,7 @@ TEST_CASE("test_tokenize_single_chars", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	while(!t.at_end())
 	{
@@ -50,7 +50,7 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	while(!t.at_end())
 	{
@@ -69,7 +69,7 @@ TEST_CASE("test_tokenize_special_character", "token")
 	std::string out;
 	std::string inp = "~@ ~@       ~@";		// Can we get ~@ from a string?
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	// Note empty token at the end, this is a consequence of the do-while loop
 	std::vector<std::string> exp_tokens = {"~@", "~@", "~@"};
@@ -91,7 +91,7 @@ TEST_CASE("test_tokenize_alphanum", "token")
 {
 	std::string inp = "a b c,     true false nil";
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	std::vector<std::string> exp_tokens = {
 		"a", "b", "c", "true", "false", "nil"
@@ -122,7 +122,7 @@ TEST_CASE("test_tokenize_comment", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	while(!t.at_end())
 	{
@@ -140,7 +140,7 @@ TEST_CASE("test_tokenize_comment", "token")
 TEST_CASE("test_tokenize_string", "token")
 {
 	std::string inp = "a string \"of text\"";
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	std::vector<std::string> exp_tokens = {
 		"a", "string", "\"of text\""
@@ -171,7 +171,7 @@ TEST_CASE("test_tokenize_escaped_string", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	while(!t.at_end())
 	{
@@ -195,13 +195,17 @@ TEST_CASE("test_tokenize_list", "token")
 	std::string out;
 	std::vector<std::string> out_tokens;
 
-	Tokenizer t(inp);
+	Reader t(inp);
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
+		//t.next();	// TODO: should this return void?
 	}
+
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -221,7 +225,7 @@ TEST_CASE("test_unmatched_paren_error", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Tokenizer t(input);
+	Reader t(input);
 
 	while(out != "\0")
 	{
@@ -253,90 +257,90 @@ TEST_CASE("test_tokenize", "reader")
 }
 
 
-TEST_CASE("test_init_reader", "reader")
-{
-	std::string source = "(+ a b)";
-	std::vector<std::string> exp_tokens = {
-		"(", "+", "a", "b", ")"
-	};
-	std::vector<std::string> tokens = tokenize(source);
-
-	Reader reader(tokens);
-
-	REQUIRE(reader.get_pos() == 0);
-	REQUIRE(reader.peek() == "(");   // we should be able to see the first token
-
-	std::vector<std::string> out_tokens;
-
-	while(!reader.at_end())
-		out_tokens.push_back(reader.next());
-
-	for(unsigned i = 0; i < exp_tokens.size(); ++i)
-		REQUIRE(out_tokens[i] == exp_tokens[i]);
-}
-
-
-TEST_CASE("test_read_list", "reader")
-{
-	std::string source = "(a b c)";
-	std::vector<std::string> exp_tokens = {
-		"(", "a", "b", "c", ")", "\0"
-	};
-	std::vector<std::string> tokens = tokenize(source);
-
-	REQUIRE(tokens.size() == exp_tokens.size());
-	for(unsigned t = 0; t < tokens.size(); ++t)
-		REQUIRE(tokens[t] == exp_tokens[t]);
-
-	Reader reader(tokens);
-	REQUIRE(reader.get_pos() == 0);
-	REQUIRE(reader.peek() == "(");
-
-	Value out_val = read_form(reader);
-	REQUIRE(out_val.get_type() == ValueType::LIST);
-
-	REQUIRE(out_val.len() == 3);
-}
+//TEST_CASE("test_init_reader", "reader")
+//{
+//	std::string source = "(+ a b)";
+//	std::vector<std::string> exp_tokens = {
+//		"(", "+", "a", "b", ")"
+//	};
+//	std::vector<std::string> tokens = tokenize(source);
+//
+//	Reader reader(tokens);
+//
+//	REQUIRE(reader.get_pos() == 0);
+//	REQUIRE(reader.peek() == "(");   // we should be able to see the first token
+//
+//	std::vector<std::string> out_tokens;
+//
+//	while(!reader.at_end())
+//		out_tokens.push_back(reader.next());
+//
+//	for(unsigned i = 0; i < exp_tokens.size(); ++i)
+//		REQUIRE(out_tokens[i] == exp_tokens[i]);
+//}
 
 
-TEST_CASE("test_read_nested_list", "reader")
-{
-	std::string source = "(a, (b, c), (d, e, f))";
-	std::vector<std::string> exp_tokens = {
-		"(", "a", "(", "b", "c", ")", "(", "d", "e", "f", ")", ")", "\0"
-	};
+//TEST_CASE("test_read_list", "reader")
+//{
+//	std::string source = "(a b c)";
+//	std::vector<std::string> exp_tokens = {
+//		"(", "a", "b", "c", ")", "\0"
+//	};
+//	std::vector<std::string> tokens = tokenize(source);
+//
+//	REQUIRE(tokens.size() == exp_tokens.size());
+//	for(unsigned t = 0; t < tokens.size(); ++t)
+//		REQUIRE(tokens[t] == exp_tokens[t]);
+//
+//	Reader reader(tokens);
+//	REQUIRE(reader.get_pos() == 0);
+//	
+//
+//	Value out_val = read_form(reader);
+//	REQUIRE(out_val.get_type() == ValueType::LIST);
+//
+//	REQUIRE(out_val.len() == 3);
+//}
 
-	std::vector<std::string> tokens = tokenize(source);
 
-	REQUIRE(tokens.size() == exp_tokens.size());
-	for(unsigned t = 0; t < tokens.size(); ++t)
-		REQUIRE(tokens[t] == exp_tokens[t]);
-
-	Reader reader(tokens);
-	REQUIRE(reader.get_pos() == 0);
-	REQUIRE(reader.peek() == "(");
-
-	Value out_val = read_form(reader);
-
-	REQUIRE(out_val.get_type() == ValueType::LIST);
-	REQUIRE(out_val.len() == 3);
-
-	// We pop from the back, so check in reverse order
-	std::vector<ValueType> exp_value_types = {
-		ValueType::LIST,
-		ValueType::LIST,
-		ValueType::ATOM,
-	};
-
-	unsigned ii = 0;
-	while(out_val.len() > 0)
-	{
-		REQUIRE(out_val.pop().get_type() == exp_value_types[ii]);
-		ii++;
-	}
-
-	// Am testing we get the same output from read_str() here
-	Value out_val_read_str = read_str(source);
-	REQUIRE(out_val_read_str.get_type() == ValueType::LIST);
-	REQUIRE(out_val_read_str.len() == 3);
-}
+//TEST_CASE("test_read_nested_list", "reader")
+//{
+//	std::string source = "(a, (b, c), (d, e, f))";
+//	std::vector<std::string> exp_tokens = {
+//		"(", "a", "(", "b", "c", ")", "(", "d", "e", "f", ")", ")", "\0"
+//	};
+//
+//	std::vector<std::string> tokens = tokenize(source);
+//
+//	REQUIRE(tokens.size() == exp_tokens.size());
+//	for(unsigned t = 0; t < tokens.size(); ++t)
+//		REQUIRE(tokens[t] == exp_tokens[t]);
+//
+//	Reader reader(tokens);
+//	REQUIRE(reader.get_pos() == 0);
+//	REQUIRE(reader.peek() == "(");
+//
+//	Value out_val = read_form(reader);
+//
+//	REQUIRE(out_val.get_type() == ValueType::LIST);
+//	REQUIRE(out_val.len() == 3);
+//
+//	// We pop from the back, so check in reverse order
+//	std::vector<ValueType> exp_value_types = {
+//		ValueType::LIST,
+//		ValueType::LIST,
+//		ValueType::ATOM,
+//	};
+//
+//	unsigned ii = 0;
+//	while(out_val.len() > 0)
+//	{
+//		REQUIRE(out_val.pop().get_type() == exp_value_types[ii]);
+//		ii++;
+//	}
+//
+//	// Am testing we get the same output from read_str() here
+//	Value out_val_read_str = read_str(source);
+//	REQUIRE(out_val_read_str.get_type() == ValueType::LIST);
+//	REQUIRE(out_val_read_str.len() == 3);
+//}

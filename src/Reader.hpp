@@ -31,7 +31,6 @@ class Tokenizer
 	unsigned    pos;
 	int         line;
 	int 		col;
-	std::stack<Paren> paren_check;
 
 	bool is_alphanum(char c) const;
 	char peek_char(void) const;
@@ -52,15 +51,31 @@ class Tokenizer
 // TODO: this gives me nothing - this and the tokenzier should be folded together.
 class Reader
 {
-	unsigned pos;
-	std::vector<std::string> tokens;
+	// Where are we in the source?
+	std::string source;
+	std::string cur_token;
+	unsigned    pos;
+	int         line;
+	int         col;
+	std::stack<Paren> paren_stack;
+
+	// Internal string functions
+
+	bool is_alphanum(char c) const;
+	char peek_char(void) const;
+	char advance(void);
+
+	std::string capture_string_literal(void);
+	std::string capture_alphanum(void);
+	std::string capture_one_char(void);
+
 
 	public:
-		Reader(const std::vector<std::string>& t);
+		Reader(const std::string& source);
 
 		bool        at_end(void) const;
 		std::string next(void);
-		std::string peek(void) const;
+		std::string peek(void) const;  // TODO: hide this?
 		unsigned    get_pos(void) const;
 };
 
