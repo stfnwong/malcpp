@@ -15,6 +15,7 @@
 Reader::Reader(const std::string& s) : 
 	source(s), cur_token(""), pos(0), line(1), col(1)
 {
+	this->source.push_back('\0');
 }
 
 
@@ -98,7 +99,7 @@ std::string Reader::peek(void) const
 
 // TODO: have this set this->cur_token, new function signature is
 // void Reader::next(void)
-std::string Reader::next(void)
+std::string Reader::consume(void)
 {
 	if(this->at_end())
 	{
@@ -173,6 +174,12 @@ std::string Reader::next(void)
 	return "\0";			
 }
 
+
+void Reader::next(void)
+{
+	this->cur_token = this->consume();
+}
+
 bool Reader::at_end(void) const
 {
 	return (this->pos == this->source.length()-1) ? true : false;
@@ -214,7 +221,8 @@ Value read_list(Reader& reader)
 
 Value read_atom(Reader& reader)
 {
-	std::string t = reader.next();
+	std::string t = reader.peek();
+	reader.next();
 
 	if(std::isdigit(t[0]))
 		return Value(std::stod(t));
@@ -243,7 +251,10 @@ std::vector<std::string> tokenize(const std::string& source)
 	Reader t(source);
 
 	while(!t.at_end())
-		tokens.push_back(t.next());
+	{
+		t.next();
+		tokens.push_back(t.peek());
+	}
 	tokens.push_back("\0");
 
 	return tokens;
@@ -257,7 +268,10 @@ Value read_str(const std::string& input)
 	std::vector<std::string> tokens;
 
 	while(!r.at_end())
-		tokens.push_back(r.next());
+	{
+		tokens.push_back(r.peek());
+		r.next();
+	}
 
 
 	return read_form(r);

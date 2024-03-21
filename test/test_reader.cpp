@@ -24,11 +24,17 @@ TEST_CASE("test_tokenize_single_chars", "token")
 
 	Reader t(inp);
 
-	while(!t.at_end())
+	while(1)
 	{
-		out = t.next();
+		t.next();   // we need to load token buffer ahead of walking the string
+		out = t.peek();
 		out_tokens.push_back(out);
+		if(t.at_end())
+			break;
 	}
+
+	for(unsigned t = 0; t < out_tokens.size(); ++t)
+		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -54,7 +60,8 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -77,7 +84,8 @@ TEST_CASE("test_tokenize_special_character", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -101,7 +109,8 @@ TEST_CASE("test_tokenize_alphanum", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -126,7 +135,8 @@ TEST_CASE("test_tokenize_comment", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -150,7 +160,8 @@ TEST_CASE("test_tokenize_string", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	} 
 
@@ -175,7 +186,8 @@ TEST_CASE("test_tokenize_escaped_string", "token")
 
 	while(!t.at_end())
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -199,6 +211,7 @@ TEST_CASE("test_tokenize_list", "token")
 
 	while(!t.at_end())
 	{
+		t.next();
 		out = t.peek();
 		out_tokens.push_back(out);
 		//t.next();	// TODO: should this return void?
@@ -229,7 +242,8 @@ TEST_CASE("test_unmatched_paren_error", "token")
 
 	while(out != "\0")
 	{
-		out = t.next();
+		t.next();
+		out = t.peek();
 		out_tokens.push_back(out);
 	}
 
@@ -242,7 +256,7 @@ TEST_CASE("test_unmatched_paren_error", "token")
 	std::cout << output << std::endl;
 }
 
-TEST_CASE("test_tokenize", "reader")
+TEST_CASE("test_tokenize_symbols", "reader")
 {
 	std::string inp = "a b c d e nil true false";
 	std::vector<std::string> exp_tokens = {

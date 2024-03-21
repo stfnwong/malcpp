@@ -25,28 +25,6 @@ struct Paren
 
 
 
-class Tokenizer
-{
-	std::string source;
-	unsigned    pos;
-	int         line;
-	int 		col;
-
-	bool is_alphanum(char c) const;
-	char peek_char(void) const;
-	char advance(void);
-
-	std::string capture_string_literal(void);
-	std::string capture_alphanum(void);
-	std::string capture_one_char(void);
-
-	public:
-		Tokenizer(const std::string& s);
-		std::string next(void);
-		bool        at_end(void) const;
-};
-
-
 // Wraps a list of tokens
 // TODO: this gives me nothing - this and the tokenzier should be folded together.
 class Reader
@@ -70,11 +48,13 @@ class Reader
 	std::string capture_one_char(void);
 
 
+	std::string consume(void);	
+
 	public:
 		Reader(const std::string& source);
 
 		bool        at_end(void) const;
-		std::string next(void);
+		void        next(void);
 		std::string peek(void) const;  // TODO: hide this?
 		unsigned    get_pos(void) const;
 };
