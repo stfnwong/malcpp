@@ -205,7 +205,6 @@ Value read_list(Reader& reader)
 	Value list(lvec);
 
 	reader.next();		// consume '('
-	std::cout << "[" << __func__ << "] consumed '(' for new list" << std::endl;
 
 	do
 	{
@@ -213,7 +212,7 @@ Value read_list(Reader& reader)
 		if(token.get_type() == ValueType::ATOM &&
 		   token.as_str() == ")")
 		{
-			reader.next();  // consume '('
+			reader.next();  // consume ')'
 			break;
 		}
 		list.push(read_form(reader));
@@ -228,8 +227,6 @@ Value read_atom(Reader& reader)
 	std::string t = reader.peek();
 	reader.next();
 	
-	std::cout << "[" << __func__ << "] consumed token [" << t << "]" << std::endl;
-
 	if(std::isdigit(t[0]))
 		return Value(std::stod(t));
 
@@ -240,7 +237,6 @@ Value read_atom(Reader& reader)
 
 Value read_form(Reader& reader)
 {
-	//reader.next();  // consume the first token
 	std::string token = reader.peek();
 
 	if(token[0] == '(')
@@ -257,13 +253,11 @@ std::vector<std::string> tokenize(const std::string& source)
 
 	Reader t(source);
 
-	//while(!t.at_end())
 	do
 	{
 		tokens.push_back(t.peek());
 		t.next();
 	} while(t.peek() != "\0");
-	//tokens.push_back("\0");
 
 	return tokens;
 }
@@ -272,15 +266,6 @@ std::vector<std::string> tokenize(const std::string& source)
 Value read_str(const std::string& input)
 {
 	Reader r(input);
-
-	std::vector<std::string> tokens;
-
-	while(!r.at_end())
-	{
-		tokens.push_back(r.peek());
-		r.next();
-	}
-
 
 	return read_form(r);
 }
