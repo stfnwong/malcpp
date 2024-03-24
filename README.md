@@ -15,3 +15,8 @@ This one will be in C++.
 What (if any) exceptions should be throw in the `Value` class?
 For now things like bounds errors are handled by just throwing `std::logic_error` 
 but this doesn't make sense to do long term.
+
+I noticed that reference cpp implementation uses a custom reference counted pointer.
+The `Environment` object is also reference counted by inheriting from `RefCounted`, 
+which implements `acquire()` and `release()` methods that increment and decrement the 
+reference count. I guess this is one way to avoid using a shared pointer?
