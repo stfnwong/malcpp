@@ -205,7 +205,6 @@ Value read_list(Reader& reader)
 	Value list(lvec);
 
 	reader.next();		// consume '('
-
 	do
 	{
 		token = reader.peek();
@@ -232,7 +231,6 @@ Value read_atom(Reader& reader)
 
 	return Value(t);
 }
-
 
 
 Value read_form(Reader& reader)
