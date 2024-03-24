@@ -19,22 +19,7 @@ TEST_CASE("test_tokenize_single_chars", "token")
 	std::vector<std::string> exp_tokens = {
 		"[", "]", "(", ")", "{", "}"
 	};
-	std::vector<std::string> out_tokens;
-	std::string out;
-
-	Reader t(inp);
-
-	while(1)
-	{
-		t.next();   // we need to load token buffer ahead of walking the string
-		out = t.peek();
-		out_tokens.push_back(out);
-		if(t.at_end())
-			break;
-	}
-
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -48,22 +33,12 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 	std::vector<std::string> exp_tokens = {
 		"hello", "world", "abcdefghijklmnopqrstuvwxyz",
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZ", "0123456789", 
-		"(", "\0" //NOTE: the ';' makes the rest of the string a comment
+		"(" //NOTE: the ';' makes the rest of the string a comment
 		//"(;:() []{}\"'*", ";:() []{}\"'*", ";:()",
 		//"[]{}\"'*)"
 	};
 
-	std::vector<std::string> out_tokens;
-	std::string out;
-
-	Reader t(inp);
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -74,20 +49,19 @@ TEST_CASE("test_tokenize_string_with_spaces", "token")
 TEST_CASE("test_tokenize_special_character", "token")
 {
 	std::string out;
-	std::string inp = "~@ ~@       ~@";		// Can we get ~@ from a string?
+	std::string inp = "~@ ~@       ~@";
 
-	Reader t(inp);
+	Reader reader(inp);
 
 	// Note empty token at the end, this is a consequence of the do-while loop
 	std::vector<std::string> exp_tokens = {"~@", "~@", "~@"};
 	std::vector<std::string> out_tokens;
 
-	while(!t.at_end())
+	do
 	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
+		out_tokens.push_back(reader.peek());
+		reader.next();
+	} while(reader.peek() != "\0");
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -95,24 +69,15 @@ TEST_CASE("test_tokenize_special_character", "token")
 }
 
 
+// TODO: Is this redundant? Do I just test with tokenize() ?
 TEST_CASE("test_tokenize_alphanum", "token")
 {
 	std::string inp = "a b c,     true false nil";
 
-	Reader t(inp);
-
 	std::vector<std::string> exp_tokens = {
 		"a", "b", "c", "true", "false", "nil"
 	};
-	std::vector<std::string> out_tokens;
-	std::string out;
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -124,21 +89,11 @@ TEST_CASE("test_tokenize_comment", "token")
 {
 	std::string inp = "a ; none of this should appear in output";
 
-
 	// Comment just eats till the end of the input and then fails over
 	// to returning a null string.
-	std::vector<std::string> exp_tokens = {"a", ""};
-	std::vector<std::string> out_tokens;
+	std::vector<std::string> exp_tokens = {"a"};
+	std::vector<std::string> out_tokens = tokenize(inp);
 	std::string out;
-
-	Reader t(inp);
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -150,20 +105,11 @@ TEST_CASE("test_tokenize_comment", "token")
 TEST_CASE("test_tokenize_string", "token")
 {
 	std::string inp = "a string \"of text\"";
-	Reader t(inp);
 
 	std::vector<std::string> exp_tokens = {
 		"a", "string", "\"of text\""
 	};
-	std::vector<std::string> out_tokens;
-	std::string out;
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	} 
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -174,22 +120,10 @@ TEST_CASE("test_tokenize_string", "token")
 TEST_CASE("test_tokenize_escaped_string", "token")
 {
 	std::string inp = "a \"string\" with \"another \\\"string\\\" inside\"";
-
-
 	std::vector<std::string> exp_tokens = {
 		"a", "\"string\"", "with", "\"another \\\"string\\\" inside\""
 	};
-	std::vector<std::string> out_tokens;
-	std::string out;
-
-	Reader t(inp);
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -205,20 +139,7 @@ TEST_CASE("test_tokenize_list", "token")
 	};
 
 	std::string out;
-	std::vector<std::string> out_tokens;
-
-	Reader t(inp);
-
-	while(!t.at_end())
-	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-		//t.next();	// TODO: should this return void?
-	}
-
-	for(unsigned t = 0; t < out_tokens.size(); ++t)
-		std::cout << "[" << t << "] : " << out_tokens[t] << std::endl;
+	std::vector<std::string> out_tokens = tokenize(inp);
 
 	REQUIRE(out_tokens.size() == exp_tokens.size());
 	for(unsigned t = 0; t < out_tokens.size(); ++t)
@@ -238,14 +159,13 @@ TEST_CASE("test_unmatched_paren_error", "token")
 	std::vector<std::string> out_tokens;
 	std::string out;
 
-	Reader t(input);
+	Reader reader(input);
 
-	while(out != "\0")
+	do
 	{
-		t.next();
-		out = t.peek();
-		out_tokens.push_back(out);
-	}
+		out_tokens.push_back(reader.peek());
+		reader.next();
+	} while(reader.peek() != "\0");
 
 	std::string output = oss.str();
 	//std::cout << oss.str() << std::endl;
@@ -256,11 +176,12 @@ TEST_CASE("test_unmatched_paren_error", "token")
 	std::cout << output << std::endl;
 }
 
+
 TEST_CASE("test_tokenize_symbols", "reader")
 {
 	std::string inp = "a b c d e nil true false";
 	std::vector<std::string> exp_tokens = {
-		"a", "b", "c", "d", "e", "nil", "true", "false", "\0"
+		"a", "b", "c", "d", "e", "nil", "true", "false"
 	};
 
 	std::vector<std::string> out_tokens = tokenize(inp);
@@ -271,50 +192,52 @@ TEST_CASE("test_tokenize_symbols", "reader")
 }
 
 
-//TEST_CASE("test_init_reader", "reader")
-//{
-//	std::string source = "(+ a b)";
-//	std::vector<std::string> exp_tokens = {
-//		"(", "+", "a", "b", ")"
-//	};
-//	std::vector<std::string> tokens = tokenize(source);
-//
-//	Reader reader(tokens);
-//
-//	REQUIRE(reader.get_pos() == 0);
-//	REQUIRE(reader.peek() == "(");   // we should be able to see the first token
-//
-//	std::vector<std::string> out_tokens;
-//
-//	while(!reader.at_end())
-//		out_tokens.push_back(reader.next());
-//
-//	for(unsigned i = 0; i < exp_tokens.size(); ++i)
-//		REQUIRE(out_tokens[i] == exp_tokens[i]);
-//}
+TEST_CASE("test_init_reader", "reader")
+{
+	std::string source = "(+ a b)";
+	std::vector<std::string> exp_tokens = {
+		"(", "+", "a", "b", ")"
+	};
+
+	Reader reader(source);
+	REQUIRE(reader.get_pos() == 1);
+
+	std::vector<std::string> out_tokens;
+	do
+	{
+		out_tokens.push_back(reader.peek());
+		reader.next();
+	} while(reader.peek() != "\0");
+
+	for(unsigned i = 0; i < exp_tokens.size(); ++i)
+		REQUIRE(out_tokens[i] == exp_tokens[i]);
+}
 
 
-//TEST_CASE("test_read_list", "reader")
-//{
-//	std::string source = "(a b c)";
-//	std::vector<std::string> exp_tokens = {
-//		"(", "a", "b", "c", ")", "\0"
-//	};
-//	std::vector<std::string> tokens = tokenize(source);
-//
-//	REQUIRE(tokens.size() == exp_tokens.size());
-//	for(unsigned t = 0; t < tokens.size(); ++t)
-//		REQUIRE(tokens[t] == exp_tokens[t]);
-//
-//	Reader reader(tokens);
-//	REQUIRE(reader.get_pos() == 0);
-//	
-//
-//	Value out_val = read_form(reader);
-//	REQUIRE(out_val.get_type() == ValueType::LIST);
-//
-//	REQUIRE(out_val.len() == 3);
-//}
+TEST_CASE("test_read_list", "reader")
+{
+	std::string source = "(a b c)";
+	std::vector<std::string> exp_tokens = {
+		"(", "a", "b", "c", ")"
+	};
+	std::vector<std::string> tokens = tokenize(source);
+
+	REQUIRE(tokens.size() == exp_tokens.size());
+	for(unsigned t = 0; t < tokens.size(); ++t)
+		REQUIRE(tokens[t] == exp_tokens[t]);
+
+	Reader reader(source);
+	// We load the first token in the ctor (which we know in this case is a
+	// left paren), so pos should advance by 1.
+	REQUIRE(reader.get_pos() == 1);   
+	
+	Value out_val = read_form(reader);
+	REQUIRE(out_val.get_type() == ValueType::LIST);
+
+	REQUIRE(out_val.len() == 3);
+	for(unsigned i = 0; i < out_val.len(); ++i)
+		REQUIRE(out_val.at(i).get_type() == ValueType::ATOM);
+}
 
 
 //TEST_CASE("test_read_nested_list", "reader")

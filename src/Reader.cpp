@@ -5,6 +5,7 @@
 
 #include <iostream>		// TODO: debug only
 
+#include "Error.hpp"
 #include "Reader.hpp"
 
 
@@ -16,6 +17,8 @@ Reader::Reader(const std::string& s) :
 	source(s), cur_token(""), pos(0), line(1), col(1)
 {
 	this->source.push_back('\0');
+	this->next();
+	// Can we consume the first token here?
 }
 
 
@@ -202,6 +205,7 @@ Value read_list(Reader& reader)
 	Value list(lvec);
 
 	reader.next();		// consume '('
+	std::cout << "[" << __func__ << "] consumed '(' for new list" << std::endl;
 
 	do
 	{
@@ -209,7 +213,7 @@ Value read_list(Reader& reader)
 		if(token.get_type() == ValueType::ATOM &&
 		   token.as_str() == ")")
 		{
-			reader.next();
+			reader.next();  // consume '('
 			break;
 		}
 		list.push(read_form(reader));
@@ -223,6 +227,8 @@ Value read_atom(Reader& reader)
 {
 	std::string t = reader.peek();
 	reader.next();
+	
+	std::cout << "[" << __func__ << "] consumed token [" << t << "]" << std::endl;
 
 	if(std::isdigit(t[0]))
 		return Value(std::stod(t));
@@ -234,9 +240,10 @@ Value read_atom(Reader& reader)
 
 Value read_form(Reader& reader)
 {
-	char c = reader.peek()[0];
+	//reader.next();  // consume the first token
+	std::string token = reader.peek();
 
-	if(c == '(')
+	if(token[0] == '(')
 		return read_list(reader);
 	else
 		return read_atom(reader);
@@ -250,12 +257,13 @@ std::vector<std::string> tokenize(const std::string& source)
 
 	Reader t(source);
 
-	while(!t.at_end())
+	//while(!t.at_end())
+	do
 	{
-		t.next();
 		tokens.push_back(t.peek());
-	}
-	tokens.push_back("\0");
+		t.next();
+	} while(t.peek() != "\0");
+	//tokens.push_back("\0");
 
 	return tokens;
 }

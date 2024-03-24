@@ -66,6 +66,8 @@ class Value
 		ValueType   get_type(void) const;
 		unsigned    len(void) const;
 
+		Value       at(unsigned idx) const;
+
 		std::string type_to_str(void) const;
 		std::string to_string(void) const;
 };

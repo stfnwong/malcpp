@@ -154,6 +154,21 @@ unsigned Value::len(void) const
 }
 
 
+// TODO: Do I want a version that returns a const ref?
+// TODO: Can we modify in place?
+Value Value::at(unsigned idx) const
+{
+	if(this->type == ValueType::LIST)
+	{
+		if(idx >= this->list.size())
+			throw std::logic_error("Index is out of bounds");
+		return this->list[idx];
+	}
+	else
+		return Value();   // we have nothing to actually return
+}
+
+
 std::string Value::type_to_str(void) const
 {
 	switch(this->type)

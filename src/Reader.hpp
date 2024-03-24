@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "Error.hpp"
 #include "Value.hpp"
 
 /*
@@ -46,8 +45,6 @@ class Reader
 	std::string capture_string_literal(void);
 	std::string capture_alphanum(void);
 	std::string capture_one_char(void);
-
-
 	std::string consume(void);	
 
 	public:
