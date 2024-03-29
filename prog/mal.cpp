@@ -26,6 +26,11 @@ std::string PRINT(Value& v)
 	return pr_str(v);
 }
 
+//static std::string rep(const std::string& inp)
+//{
+//	return PRINT(EVAL(READ(inp)));
+//}
+//
 
 
 int main(int argc, char *argv[])

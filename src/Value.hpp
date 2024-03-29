@@ -58,6 +58,7 @@ class Value
 		// Interface for list types
 		void  push(Value v);
 		Value pop(void);
+		// TODO: pop_front()?
 
 		// Operators 
 		bool operator==(const Value& other) const;
