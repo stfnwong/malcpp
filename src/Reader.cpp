@@ -4,6 +4,7 @@
 
 
 #include <iostream>		// TODO: debug only
+#include <memory>
 
 #include "Error.hpp"
 #include "Reader.hpp"
@@ -198,47 +199,49 @@ unsigned Reader::get_pos(void) const
 /*
  * ==== Create value types ==== 
  */
-Value read_list(Reader& reader)
+void read_list(Reader& reader, ValueVec* items)
 {
-	Value token;
-	std::vector<Value> lvec;
-	Value list(lvec);
-
-	reader.next();		// consume '('
 	do
 	{
-		token = reader.peek();
-		if(token.get_type() == ValueType::ATOM &&
-		   token.as_str() == ")")
+		std::string token = reader.peek();
+		if(token == ")")
 		{
-			reader.next();  // consume ')'
-			break;
+			reader.next();
+			return;
 		}
-		list.push(read_form(reader));
+		items->push_back(read_form(reader));
 	} while(!reader.at_end());
-
-	return list;
 }
 
 
-Value read_atom(Reader& reader)
+ValuePtr read_atom(Reader& reader)
 {
 	std::string t = reader.peek();
 	reader.next();
 	
 	if(std::isdigit(t[0]))
-		return Value(std::stod(t));
+		return make_digit(std::stod(t));
 
-	return Value(t);
+	// Construct a Symbol token and return that
+	//return ValuePtr(t);
+	return make_atom(t);
 }
 
 
-Value read_form(Reader& reader)
+
+ValuePtr read_form(Reader& reader)
 {
 	std::string token = reader.peek();
 
 	if(token[0] == '(')
-		return read_list(reader);
+	{
+		reader.next(); 		// consume '('
+		
+		std::unique_ptr<ValueVec> items(new ValueVec);
+		read_list(reader, items.get());
+		return make_list(items.release());
+		//return ValuePtr(items.release());
+	}
 	else
 		return read_atom(reader);
 }
@@ -261,7 +264,7 @@ std::vector<std::string> tokenize(const std::string& source)
 }
 
 
-Value read_str(const std::string& input)
+ValuePtr read_str(const std::string& input)
 {
 	Reader r(input);
 
