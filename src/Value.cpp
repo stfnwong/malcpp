@@ -48,61 +48,57 @@ Value::~Value()
 	}
 }
 
-//Value::Value(const std::vector<Value>& l) : type(ValueType::LIST), list(l)
-//{
-//}
-//
 // TODO: replace all the std::logic_error throws with something better or more specific
-//Value Value::cast_to_int(void) const
-//{
-//	switch(this->type)
-//	{
-//		case ValueType::INT:
-//			return *this;		// TODO: return copy ctor
-//		case ValueType::FLOAT:
-//			return Value(int(this->value_data.f));
-//		default:
-//			throw std::logic_error("Cant cast this type to INT");
-//	}
-//}
-//
-//// No copy ctor means we return a ref-counted pointer
-//Value Value::cast_to_float(void) const
-//{
-//	switch(this->type)
-//	{
-//		case ValueType::INT:
-//			return Value(double(this->value_data.i));
-//		case ValueType::FLOAT:
-//			return *this;
-//		default:
-//			throw std::logic_error("Cant cast this type to FLOAT");
-//	}
-//}
-//
+Value Value::cast_to_int(void) const
+{
+	switch(this->type)
+	{
+		case ValueType::INT:
+			return Value(this->value_data.i);
+		case ValueType::FLOAT:
+			return Value(int(this->value_data.f));
+		default:
+			throw std::logic_error("Cant cast this type to INT");
+	}
+}
+
+// No copy ctor means we return a ref-counted pointer
+Value Value::cast_to_float(void) const
+{
+	switch(this->type)
+	{
+		case ValueType::INT:
+			return Value(double(this->value_data.i));
+		case ValueType::FLOAT:
+			return Value(this->value_data.f);
+		default:
+			throw std::logic_error("Cant cast this type to FLOAT");
+	}
+}
+
 
 // Get values from this item
-//int Value::as_int(void) const
-//{
-//	return this->cast_to_int().value_data.i;
-//}
-//
-//double Value::as_float(void) const
-//{
-//	return this->cast_to_float().value_data.f;
-//}
-//
-//std::string Value::as_str(void) const
-//{
-//	switch(this->type)
-//	{
-//		case ValueType::ATOM:
-//		case ValueType::STRING:
-//			return this->str;
-//		default:
-//			throw std::logic_error("Not a string type");
-//	}
-//}
+int Value::as_int(void) const
+{
+	return this->cast_to_int().value_data.i;
+}
+
+double Value::as_float(void) const
+{
+	return this->cast_to_float().value_data.f;
+}
+
+std::string Value::as_str(void) const
+{
+	switch(this->type)
+	{
+		case ValueType::ATOM:
+		case ValueType::STRING:
+			return this->str;
+		default:
+			throw std::logic_error("Not a string type");
+	}
+}
 
 
 // TODO: pass by const ref?

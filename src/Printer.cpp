@@ -6,9 +6,9 @@
 
 
 // NOTE: this is already covered in the class definition
-std::string pr_str(Value& v)
+std::string pr_str(ValuePtr v)
 {
-	return v.to_string();
+	return v->to_string();
 
 	//switch(v.get_type())
 	//{

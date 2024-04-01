@@ -13,8 +13,8 @@
 
 TEST_CASE("test_create_number_value", "value")
 {
-	std::vector<Value> values = {
-		Value(1.0f), Value(1), Value(22222.2)
+	std::vector<Value*> values = {
+		new Value(1.0f), new Value(1), new Value(22222.2)
 	};
 	std::vector<ValueType> exp_types = {
 		ValueType::FLOAT, ValueType::INT, ValueType::FLOAT
@@ -33,17 +33,17 @@ TEST_CASE("test_create_number_value", "value")
 
 	for(unsigned i = 0; i < values.size(); ++i)
 	{
-		REQUIRE(values[i].get_type() == exp_types[i]);
-		REQUIRE(values[i].as_int() == exp_values_as_int[i]);
-		REQUIRE(values[i].as_float() == exp_values_as_float[i]);
+		REQUIRE(values[i]->get_type() == exp_types[i]);
+		REQUIRE(values[i]->as_int() == exp_values_as_int[i]);
+		REQUIRE(values[i]->as_float() == exp_values_as_float[i]);
 	}
 }
 
 
 TEST_CASE("test_create_atom_value", "value")
 {
-	std::vector<Value> values = {
-		Value("some string"), Value("another string")
+	std::vector<Value*> values = {
+		new Value("some string"), new Value("another string")
 	};
 	std::vector<ValueType> exp_types = {
 		ValueType::ATOM, ValueType::ATOM
@@ -55,7 +55,7 @@ TEST_CASE("test_create_atom_value", "value")
 	REQUIRE(values.size() == exp_types.size());
 	for(unsigned i = 0; i < exp_types.size(); ++i)
 	{
-		REQUIRE(values[i].get_type() == exp_types[i]);
+		REQUIRE(values[i]->get_type() == exp_types[i]);
 	}
 }
 

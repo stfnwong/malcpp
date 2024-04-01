@@ -27,8 +27,6 @@ enum class ValueType
 
 class Value;
 using ValuePtr = RcPtr<Value>;
-
-// Need some forward declarations here 
 using ValueVec = std::vector<RcPtr<Value>>;
 
 
@@ -44,12 +42,10 @@ class Value : public RefCountable
 
 	ValueType          type;
 	std::string        str;
-	std::vector<RcPtr<Value>>* items;
+	ValueVec*          items;
 
-	//std::vector<Value> list;
-
-	//Value cast_to_int(void) const;
-	//Value cast_to_float(void) const;
+	Value cast_to_int(void) const;
+	Value cast_to_float(void) const;
 
 	public:
 		Value();
@@ -63,10 +59,10 @@ class Value : public RefCountable
 
 		// TODO: bool is_number()?
 
-		//int         as_int(void) const;
-		//bool        as_bool(void) const;
-		//double      as_float(void) const;
-		//std::string as_str(void) const;
+		int         as_int(void) const;
+		bool        as_bool(void) const;
+		double      as_float(void) const;
+		std::string as_str(void) const;
 		//// as_list()?
 
 		// Interface for list types

@@ -10,7 +10,7 @@
 #include "Value.hpp"
 
 
-std::string pr_str(Value& v);
+std::string pr_str(ValuePtr v);
 
 
 #endif /*__MAL_PRINTER_HPP*/

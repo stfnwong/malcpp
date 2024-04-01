@@ -11,17 +11,17 @@
 #include "Printer.hpp"
 
 
-Value READ(const std::string& input)
+ValuePtr READ(const std::string& input)
 {
 	return read_str(input);
 }
 
-Value EVAL(const Value& input)
+ValuePtr EVAL(ValuePtr input)
 {
 	return input;
 }
 
-std::string PRINT(Value& v)
+std::string PRINT(ValuePtr v)
 {
 	return pr_str(v);
 }
