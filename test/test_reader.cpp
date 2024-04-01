@@ -231,13 +231,13 @@ TEST_CASE("test_read_list", "reader")
 	// left paren), so pos should advance by 1.
 	REQUIRE(reader.get_pos() == 1);   
 	
-	Value out_val = read_form(reader);
-	REQUIRE(out_val.get_type() == ValueType::LIST);
+	ValuePtr out_val = read_form(reader);
+	REQUIRE(out_val->get_type() == ValueType::LIST);
 
 	// NOTE: maybe I should use pop() instead...
-	REQUIRE(out_val.len() == 3);
-	for(unsigned i = 0; i < out_val.len(); ++i)
-		REQUIRE(out_val.at(i).get_type() == ValueType::ATOM);
+	REQUIRE(out_val->len() == 3);
+	//for(unsigned i = 0; i < out_val->len(); ++i)
+	//	REQUIRE(out_val->at(i).get_type() == ValueType::ATOM);
 }
 
 
@@ -258,10 +258,10 @@ TEST_CASE("test_read_nested_list", "reader")
 	REQUIRE(reader.get_pos() == 1);
 	REQUIRE(reader.peek() == "(");
 
-	Value out_val = read_form(reader);
+	ValuePtr out_val = read_form(reader);
 
-	REQUIRE(out_val.get_type() == ValueType::LIST);
-	REQUIRE(out_val.len() == 3);
+	REQUIRE(out_val->get_type() == ValueType::LIST);
+	REQUIRE(out_val->len() == 3);
 
 	// We pop from the back, so check in reverse order
 	std::vector<ValueType> exp_value_types = {
@@ -271,14 +271,14 @@ TEST_CASE("test_read_nested_list", "reader")
 	};
 
 	unsigned ii = 0;
-	while(out_val.len() > 0)
+	while(out_val->len() > 0)
 	{
-		REQUIRE(out_val.pop().get_type() == exp_value_types[ii]);
+		REQUIRE(out_val->pop()->get_type() == exp_value_types[ii]);
 		ii++;
 	}
 
 	// Am testing we get the same output from read_str() here
-	Value out_val_read_str = read_str(source);
-	REQUIRE(out_val_read_str.get_type() == ValueType::LIST);
-	REQUIRE(out_val_read_str.len() == 3);
+	ValuePtr out_val_read_str = read_str(source);
+	REQUIRE(out_val_read_str->get_type() == ValueType::LIST);
+	REQUIRE(out_val_read_str->len() == 3);
 }

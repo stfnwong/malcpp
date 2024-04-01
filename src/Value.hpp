@@ -59,7 +59,6 @@ class Value : public RefCountable
 		Value(const std::string& s);  // construct an ATOM
 		Value(const std::string& s, ValueType t);
 		Value(ValueVec* ll);
-		//Value(std::vector<RcPtr<Value>>* ll);
 		~Value();
 
 		// TODO: bool is_number()?
@@ -71,8 +70,8 @@ class Value : public RefCountable
 		//// as_list()?
 
 		// Interface for list types
-		void  push(Value v);
-		Value pop(void);
+		void     push(ValuePtr v);
+		ValuePtr pop(void);
 		// TODO: pop_front()?
 
 		// Operators 
@@ -82,7 +81,7 @@ class Value : public RefCountable
 		ValueType   get_type(void) const;
 		unsigned    len(void) const;
 
-		Value       at(unsigned idx) const;
+		//ValuePtr    at(unsigned idx) const;
 
 		std::string type_to_str(void) const;
 		std::string to_string(void) const;
@@ -94,30 +93,6 @@ ValuePtr make_list(ValueVec* ll);
 ValuePtr make_atom(const std::string& s);
 ValuePtr make_digit(double d);
 
-
-class MalSequence : public RefCountable
-{
-	std::vector<RcPtr<Value>>* items;
-
-	public:
-		MalSequence(std::vector<RcPtr<Value>>* itm);
-		// TODO: ctor from iterator
-		MalSequence(const MalSequence& that);
-
-		~MalSequence();
-
-		//RcPtr<Value> first(void) const;  // TODO: need to implement parsing NIL keyword
-		unsigned size(void) const;
-};
-
-
-// A kind of managed reference counted pointer to a Value
-
-// Some type constructors 
-namespace mal
-{
-	//ValuePtr list(
-};
 
 
 #endif /*__MAL_VALUE_HPP*/

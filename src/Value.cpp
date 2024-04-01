@@ -106,22 +106,22 @@ Value::~Value()
 
 
 // TODO: pass by const ref?
-void Value::push(Value v)
+void Value::push(ValuePtr v)
 {
 	if(this->type != ValueType::LIST)
 		throw std::logic_error("This isn't a list");
 
-	this->list.push_back(v);
+	this->items->push_back(v);
 }
 
 
-Value Value::pop(void)
+ValuePtr Value::pop(void)
 {
 	if(this->type != ValueType::LIST)
 		throw std::logic_error("This isn't a list");
 
-	Value v = this->list.back();
-	this->list.pop_back();
+	ValuePtr v = this->items->back();
+	this->items->pop_back();
 
 	return v;
 }
@@ -141,7 +141,7 @@ bool Value::operator==(const Value& other) const
 		case ValueType::BOOL:
 			return this->value_data.b == other.value_data.b;
 		case ValueType::LIST:
-			return this->list == other.list;		// TODO: what does this check?
+			return this->items == other.items;		// TODO: what does this check? Pointers are equal?
 		default:
 			return false;
 	}
@@ -162,7 +162,7 @@ unsigned Value::len(void) const
 	switch(this->type)
 	{
 		case ValueType::LIST:
-			return this->list.size();
+			return this->items->size();
 		case ValueType::STRING:
 			return this->str.size();
 		default:
@@ -173,18 +173,18 @@ unsigned Value::len(void) const
 
 // TODO: Do I want a version that returns a const ref?
 // TODO: Can we modify in place?
-Value Value::at(unsigned idx) const
-{
-	if(this->type == ValueType::LIST)
-	{
-		if(idx >= this->list.size())
-			throw std::logic_error("Index is out of bounds");
-		return this->list[idx];
-	}
-	else
-		return Value();   // we have nothing to actually return
-}
-
+//ValuePtr Value::at(unsigned idx) const
+//{
+//	if(this->type == ValueType::LIST)
+//	{
+//		if(idx >= this->items->size())
+//			throw std::logic_error("Index is out of bounds");
+//		return this->items[idx];
+//	}
+//	else
+//		return make_atom("nil");  // TODO: this is just an atom with NIL value, not a NIL atom.
+//}
+//
 
 std::string Value::type_to_str(void) const
 {
@@ -208,10 +208,10 @@ std::string Value::to_string(void) const
 	if(this->type == ValueType::LIST)
 	{
 		oss << "(";
-		for(unsigned i = 0; i < this->list.size(); ++i)
+		for(unsigned i = 0; i < this->items->size(); ++i)
 		{
-			oss << this->list[i].to_string();
-			if(i < this->list.size()-1)
+			oss << (*this->items)[i]->to_string();
+			if(i < this->items->size()-1)
 				oss << ", ";
 		}
 		oss << ")";
@@ -248,27 +248,4 @@ ValuePtr make_atom(const std::string& s)
 ValuePtr make_digit(double d)
 {
 	return RcPtr<Value>(new Value(d));
-}
-
-
-/*
- * Sequence container
- */
-MalSequence::MalSequence(std::vector<RcPtr<Value>>* itm) : items(itm) {}
-
-MalSequence::MalSequence(const MalSequence& that) : items(new MalSequence(*that.itm)) {}
-
-MalSequence::~MalSequence()
-{
-	delete this->items;
-}
-
-//RcPtr<Value> MalSequence::first(void) const
-//{
-//	return this->size() == 0 ? RcPtr<Value>("nil") : *this->items[0];
-//}
-
-unsigned MalSequence::size(void) const
-{
-	return this->items->size();
 }

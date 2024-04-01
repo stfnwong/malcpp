@@ -51,8 +51,7 @@ template <class T> class RcPtr
 			this->release();
 		}
 
-		const RcPtr& operator=(const RcPtr& that) 
-		{
+		const RcPtr& operator=(const RcPtr& that) {
 			this->acquire(that.obj);
 			return *this;
 		}
@@ -81,7 +80,7 @@ template <class T> class RcPtr
 		{
 			if(this->obj != nullptr)
 				this->obj->acquire();
-			this->realease();
+			this->release();
 			this->obj = object;
 		}
 

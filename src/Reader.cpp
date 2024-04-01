@@ -223,7 +223,6 @@ ValuePtr read_atom(Reader& reader)
 		return make_digit(std::stod(t));
 
 	// Construct a Symbol token and return that
-	//return ValuePtr(t);
 	return make_atom(t);
 }
 
@@ -240,7 +239,6 @@ ValuePtr read_form(Reader& reader)
 		std::unique_ptr<ValueVec> items(new ValueVec);
 		read_list(reader, items.get());
 		return make_list(items.release());
-		//return ValuePtr(items.release());
 	}
 	else
 		return read_atom(reader);

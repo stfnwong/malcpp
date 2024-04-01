@@ -5,6 +5,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch/catch.hpp"
 
+#include <memory>
 #include "Value.hpp"
 
 
@@ -61,14 +62,22 @@ TEST_CASE("test_create_atom_value", "value")
 
 TEST_CASE("test_create_list_value", "value")
 {
-	std::vector<Value> list_elements = {
-		Value("string element"), Value(1.0), Value(20)
+	//std::vector<Value> list_elements = {
+	//	Value("string element"), Value(1.0), Value(20)
+	//};
+
+	std::vector<RcPtr<Value>> value_ptrs = {
+		new Value("string element"), new Value(1.0), new Value(20)
 	};
 
-	Value list_value(list_elements);
+	ValueVec* ll;
+	for(auto& p : value_ptrs)
+		ll->push_back(p);
 
-	REQUIRE(list_value.get_type() == ValueType::LIST);
-	REQUIRE(list_value.len() == list_elements.size());
+	ValuePtr list_value = make_list(ll);
+
+	REQUIRE(list_value->get_type() == ValueType::LIST);
+	REQUIRE(list_value->len() == value_ptrs.size());
 
 	// Reverse order since I pop
 	std::vector<ValueType> exp_value_types = {
@@ -78,7 +87,7 @@ TEST_CASE("test_create_list_value", "value")
 	};
 
 	// Check I didn't mistype anything
-	REQUIRE(exp_value_types.size() == list_elements.size());
+	REQUIRE(exp_value_types.size() == value_ptrs.size());
 	for(unsigned i = 0; i < exp_value_types.size(); ++i)
-		REQUIRE(exp_value_types[i] == list_value.pop().get_type());
+		REQUIRE(exp_value_types[i] == list_value->pop()->get_type());
 }
